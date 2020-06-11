@@ -16,6 +16,6 @@ object ConfigObject {
   val TELEGRAM_HOST: String    = conf.getString("telegtam.host")
   val TELEGRAM_PROXY: Boolean  = conf.getBoolean("telegtam.proxy")
   val TELEGRAM_PORT: Int       = conf.getInt("telegtam.port")
-  val TELEGRAM_CHAT_ID: Int    = conf.getInt("telegtam.chat.id")
+  val TELEGRAM_CHAT_ID: Long    = conf.getInt("telegtam.chat.id")
 
 }

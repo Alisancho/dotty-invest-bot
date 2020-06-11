@@ -17,7 +17,7 @@ import ru.tinkoff.invest.openapi.OpenApi
 import akka.util.ccompat.JavaConverters._
 import ru.tinkoff.invest.openapi.models.market.Instrument
 import cats.implicits._
-
+import akka.util.ccompat.JavaConverters._
 import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.concurrent.duration._
