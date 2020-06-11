@@ -11,7 +11,7 @@ object TelegtamHelper {
   type TeComand = "Сбор аналитики" | "Остановка сбора аналитики"
   
   def ko(j:TeComand) = { j match {
-    case "Сбор аналитики" => "wd" ==>> 23
+//    case "Сбор аналитики" => "wd" ==>> 23
     case "Остановка сбора аналитики" => ""
   }
 }

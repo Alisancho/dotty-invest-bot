@@ -6,6 +6,7 @@ import monix.execution.schedulers.SchedulerService
 import ru.invest.core.analytics.СandleCandles._
 import ru.tinkoff.invest.openapi.models.market.{Candle, HistoricalCandles, Instrument}
 import ru.invest.core.analytics.СandleCandles
+import ru.invest.core.analytics.InstrumentCandles._
 trait Harami {
   def harami(l: HistoricalCandles)(instrument: Instrument)(f: String => Task[_])(schedulerDB: SchedulerService): Task[_] =
     for {

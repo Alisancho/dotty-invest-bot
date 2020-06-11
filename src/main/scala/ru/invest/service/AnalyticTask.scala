@@ -1,13 +1,12 @@
 package ru.invest.service
-
+import ru.invest.core.analytics.HistoricalCandles._
 import java.util.concurrent.CompletionStage
-
+import com.typesafe.scalalogging.LazyLogging
 import akka.NotUsed
 import akka.stream.SharedKillSwitch
 import akka.stream.scaladsl.{RunnableGraph, Sink, Source}
 import monix.eval.Task
 import monix.execution.schedulers.SchedulerService
-import ru.tinkoff.invest.openapi.models.market.Instrument
 import akka.stream.{Materializer, SharedKillSwitch}
 import akka.stream.scaladsl.{RunnableGraph, Sink, Source}
 import com.typesafe.scalalogging.LazyLogging
@@ -22,23 +21,27 @@ import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.concurrent.duration._
 import scala.concurrent.java8.FuturesConvertersImpl.{CF, P}
-object AnalyticTask {
-  
-  def startAnalyticsJob(openApi: OpenApi)(sharedKillSwitch: SharedKillSwitch)(f: String => Task[_]): Task[Unit] =
+
+object AnalyticTask extends LazyLogging{
+  import ru.invest.core.analytics.CompletionStageCandles._
+  import ru.invest.core.analytics.InstrumentCandles._
+  def startAnalyticsJob(openApi: OpenApi)
+                       (sharedKillSwitch: SharedKillSwitch)
+                       (f: String => Task[_])
+                       (sheduler:SchedulerService,materializer:Materializer): Task[Unit] =
     for {
-      c    <- Task.fromFuture(toFuture(openApi.getMarketContext.getMarketStocks))
+      c    <- Task.fromFuture(openApi.getMarketContext.getMarketStocks.toScalaFuture)
       list = c.instruments.asScala.toList
-      _    = analyticsStream(list, sharedKillSwitch)(f)(sheduler).run()(materializer)
+      _    = analyticsStream(list, sharedKillSwitch)(openApi)(f)(sheduler).run()(materializer)
     } yield ()
 
-  def analyticsStream(list: List[Instrument], sharedKillSwitch: SharedKillSwitch)(f: String => Task[_])(
+  def analyticsStream(list: List[Instrument], sharedKillSwitch: SharedKillSwitch)(openApi: OpenApi)(f: String => Task[_])(
       sheduler: SchedulerService): RunnableGraph[NotUsed] =
     Source(list)
       .throttle(1, 800.millis)
       .via(sharedKillSwitch.flow)
       .map(instrument => {
-        tinkoff
-          .getMarketCandles(instrument.figi)
+        instrument.toTaskAnslytics(openApi)
           .runAsync {
             case Left(value) => logger.error(value.getMessage)
             case Right(value) => {
@@ -54,15 +57,4 @@ object AnalyticTask {
           }(sheduler)
       })
       .to(Sink.ignore)
-  
-  def toFuture (cs: CompletionStage[T]): Future[T] = {
-    cs match {
-      case cf: CF[T] => cf.wrapped
-      case _ =>
-        val p = new P[T](cs)
-        cs whenComplete p
-        p.future
-    }
-  }
-  
 }

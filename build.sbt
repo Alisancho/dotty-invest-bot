@@ -1,4 +1,5 @@
 import sbt.Keys.libraryDependencies
+import sbtassembly.MergeStrategy
 
 lazy val root = project
   .in(file("."))
