@@ -11,8 +11,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import ru.invest.service.TelegramContainerMess;
 import java.util.List;
+import ru.invest.core.ConfigObject;
 import java.util.Objects;
 
 public class InvestInfoBot extends TelegramLongPollingBot {
@@ -65,7 +65,7 @@ public class InvestInfoBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update.getMessage() != null && update.getMessage().hasText() && Objects.equals(update.getMessage().getChatId(), this.chat_id)) {
             try {
-                acctorRef.tell(TelegramContainerMess.apply(update.getMessage().getText(), this), acctorRef);
+                acctorRef.tell(update.getMessage().getText(), acctorRef);
             } catch (Throwable ignored) {
 
             }

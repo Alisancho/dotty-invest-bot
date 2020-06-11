@@ -11,7 +11,6 @@ import monix.execution.schedulers.SchedulerService
 import org.telegram.telegrambots.ApiContextInitializer
 import org.telegram.telegrambots.bots.DefaultBotOptions
 import org.telegram.telegrambots.meta.ApiContext
-import ru.invest.service.{TelegramActorMess, TelegramServiceImpl, TinkoffRESTServiceImpl}
 import ru.tinkoff.invest.openapi.OpenApi
 import ru.tinkoff.invest.openapi.okhttp.OkHttpOpenApiFactory
 import ru.invest.core.ConfigObject._

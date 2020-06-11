@@ -43,16 +43,16 @@ object AnalyticTask extends LazyLogging{
       .map(instrument => {
         instrument.toTaskAnslytics(openApi)
           .runAsync {
-            case Left(value) => logger.error(value.getMessage)
+            case Left(value) => println(value.getMessage)
             case Right(value) => {
               val list = value.get()
-              logger.info(list.toString)
+              println(list.toString)
               list
                 .toAbsorption(f)(instrument)(sheduler)
-                .onErrorHandle(p => logger.error(p.getMessage))
+                .onErrorHandle(p => println(p.getMessage))
                 .runAsyncAndForget(sheduler)
-              list.toHammer(f)(instrument)(sheduler).onErrorHandle(p => logger.error(p.getMessage)).runAsyncAndForget(sheduler)
-              list.toHarami(f)(instrument)(sheduler).onErrorHandle(p => logger.error(p.getMessage)).runAsyncAndForget(sheduler)
+              list.toHammer(f)(instrument)(sheduler).onErrorHandle(p => println(p.getMessage)).runAsyncAndForget(sheduler)
+              list.toHarami(f)(instrument)(sheduler).onErrorHandle(p => println(p.getMessage)).runAsyncAndForget(sheduler)
             }
           }(sheduler)
       })

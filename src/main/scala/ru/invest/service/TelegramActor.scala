@@ -10,7 +10,7 @@ import ru.core.bot.InvestInfoBot
 import ru.tinkoff.invest.openapi.OpenApi
 
 object TelegramActor {
-  ApiContextInitializer.init()
+  
   def apply(token: String,
             name: String,
             chat_id: Long,
@@ -27,7 +27,7 @@ class TelegramActor(token: String,
                     api: OpenApi,
                     schedulerTinkoff: SchedulerService)
     extends Actor {
-
+  ApiContextInitializer.init()
   private val log: LoggingAdapter = Logging(context.system, this)
 
   private val investInfoBot: InvestInfoBot = getInvestInfoBot(defaultBotOptions)
