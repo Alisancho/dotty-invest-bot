@@ -36,8 +36,21 @@ class TelegramActor(token: String,
   private var analysisFlag                       = false
 
   def receive: Receive = {
-    case "Сбор аналитики"            => 23
-    case "Остановка сбора аналитики" => 23
+    case "Сбор аналитики"            => if (analysisFlag) {
+      investInfoBot.sendMessage("Сбор аналитики уже запущен")
+    } else {
+      analysisFlag = true
+      sharedKillSwitch = KillSwitches.shared("my-kill-switch")
+//-----------
+      investInfoBot.sendMessage("Успешный запуск сбора аналитики")
+    }
+    case "Остановка сбора аналитики" => if (analysisFlag) {
+      sharedKillSwitch.shutdown()
+      analysisFlag = false
+      investInfoBot.sendMessage("Сбор аналитики остановлен")
+    } else {
+      investInfoBot.sendMessage("Сбор аналитики не запущен")
+    }
 
     case "Сбор аналитики" =>
       if (analysisFlag) {
