@@ -5,7 +5,6 @@ import com.typesafe.scalalogging.LazyLogging
 import akka.NotUsed
 import akka.stream.SharedKillSwitch
 import akka.stream.scaladsl.{RunnableGraph, Sink, Source}
-import monix.eval.Task
 import monix.execution.schedulers.SchedulerService
 import akka.stream.{Materializer, SharedKillSwitch}
 import akka.stream.scaladsl.{RunnableGraph, Sink, Source}

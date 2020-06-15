@@ -20,7 +20,7 @@ import ru.invest.service.TelegramActor
 object Main extends TaskApp {
   implicit val system: ActorSystem                = ActorSystem()
   implicit val ec: ExecutionContextExecutor       = system.dispatcher
-  implicit val materialiver: Materializer         = ActorMaterializer()
+  implicit val materializer: Materializer         = ActorMaterializer()
   implicit val schedulerTinkoff: SchedulerService = Scheduler.fixedPool(name = "my-fixed-tinkoff", poolSize = 5)
 
   override def run(args: List[String]): Task[ExitCode] =
@@ -28,7 +28,7 @@ object Main extends TaskApp {
       _  <- Task.unit
       ap <- apiTask
       ta = system.actorOf(
-        TelegramActor(TELEGRAM_TOKEN, TELEGRAM_NAMEBOT, TELEGRAM_CHAT_ID, getProxy(TELEGRAM_PROXY), ap, schedulerTinkoff))
+        TelegramActor(TELEGRAM_TOKEN, TELEGRAM_NAMEBOT, TELEGRAM_CHAT_ID, getProxy(TELEGRAM_PROXY), ap, schedulerTinkoff,materializer))
     } yield ExitCode.Success
 
   private val apiTask: Task[OpenApi] = for {
