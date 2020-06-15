@@ -63,6 +63,7 @@ public class InvestInfoBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        System.out.println(update.getMessage().getText());
         if (update.getMessage() != null && update.getMessage().hasText() && Objects.equals(update.getMessage().getChatId(), this.chat_id)) {
             try {
                 acctorRef.tell(update.getMessage().getText(), acctorRef);

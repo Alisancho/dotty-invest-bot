@@ -20,8 +20,8 @@ trait Harami {
       q1 = k.last
       _ = if ((q5, q4, q3).trendDown && (q2, q1).trendUp && harami2Up(q2, q3))
         f(instrument.toStringTelegramUp).runAsyncAndForget(schedulerDB)
-      //      _  = if ((q5, q4, q3).trendUp && (q2,q1).trendDown && harami2Down(q2,q3))
-      //        f(instrument.toStringTelegramDown).runAsyncAndForget(schedulerDB)
+      _  = if ((q5, q4, q3).trendUp && (q2,q1).trendDown && harami2Down(q2,q3))
+        f(instrument.toStringTelegramDown).runAsyncAndForget(schedulerDB)
     } yield ()
 
   private val harami2Up: (Candle, Candle) => Boolean = (q1, q2) =>

@@ -16,7 +16,7 @@ trait Hammer {
       q1 = k.last
       _  = if ((q2, q1).trendUp && (q4, q3, q2).trendDown && q2.isHammer)
         f(instrument.toStringTelegramUp).runAsyncAndForget(schedulerDB)
-      //      _  = if ((q2, q1).trendDown && (q4, q3, q2).trendUp && q2.isHammer)
-      //        f(instrument.toStringTelegramDown).runAsyncAndForget(schedulerDB)
+      _  = if ((q2, q1).trendDown && (q4, q3, q2).trendUp && q2.isHammer)
+        f(instrument.toStringTelegramDown).runAsyncAndForget(schedulerDB)
     } yield ()
 }

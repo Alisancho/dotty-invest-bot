@@ -14,7 +14,7 @@ trait Absorption {
       q1 = k.last
       _  = if (q1.isAbsorptionUp(q2))
         f(instrument.toStringTelegramUp).runAsyncAndForget(schedulerDB)
-      //      _  = if (q1.isAbsorptionDown(q2))
-      //        f(instrument.toStringTelegramDown).runAsyncAndForget(schedulerDB)
+      _  = if (q1.isAbsorptionDown(q2))
+        f(instrument.toStringTelegramDown).runAsyncAndForget(schedulerDB)
     } yield ()
 }
