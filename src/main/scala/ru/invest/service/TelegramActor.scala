@@ -33,17 +33,16 @@ class TelegramActor(token: String,
                     materializer: Materializer)
     extends Actor {
  import TelegramActor._
-
-  private val log: LoggingAdapter = Logging(context.system, this)
   
+  private val log: LoggingAdapter = Logging(context.system, this)
+
   private val telegramBotsApi:TelegramBotsApi = new TelegramBotsApi()
   private val investInfoBot: InvestInfoBot = getInvestInfoBot(defaultBotOptions)
-  
   telegramBotsApi.registerBot(investInfoBot)
-  
+
   private var sharedKillSwitch: SharedKillSwitch = KillSwitches.shared("my-kill-switch")
   private var analysisFlag                       = false
-  
+
   def receive: Receive = {
     case "Сбор аналитики" =>{
       log.info("Сбор аналитики")
@@ -81,13 +80,9 @@ class TelegramActor(token: String,
   override def preStart(): Unit = {
     ApiContextInitializer.init()
   }
-  
-  
+
   override val supervisorStrategy =
     OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.second){
-//      case ResumeException => Resume
-//      case RestartException => Restart
-//      case StopException => Stop
       case _: Exception => {
         log.error("ERROR!!!!!!!!!!!!!")
         Stop
