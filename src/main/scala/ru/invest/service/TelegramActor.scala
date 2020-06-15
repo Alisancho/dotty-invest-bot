@@ -10,15 +10,15 @@ import ru.core.bot.InvestInfoBot
 import ru.tinkoff.invest.openapi.OpenApi
 import monix.eval.Task
 object TelegramActor {
-  
+
   def apply(token: String,
             name: String,
             chat_id: Long,
             defaultBotOptions: Option[DefaultBotOptions],
             api: OpenApi,
             schedulerTinkoff: SchedulerService,
-            materializer:Materializer): Props =
-    Props(new TelegramActor(token, name, chat_id, defaultBotOptions, api, schedulerTinkoff,materializer))
+            materializer: Materializer): Props =
+    Props(new TelegramActor(token, name, chat_id, defaultBotOptions, api, schedulerTinkoff, materializer))
 }
 
 class TelegramActor(token: String,
@@ -27,7 +27,7 @@ class TelegramActor(token: String,
                     defaultBotOptions: Option[DefaultBotOptions],
                     api: OpenApi,
                     schedulerTinkoff: SchedulerService,
-                    materializer:Materializer)
+                    materializer: Materializer)
     extends Actor {
   ApiContextInitializer.init()
   private val log: LoggingAdapter = Logging(context.system, this)
@@ -38,21 +38,23 @@ class TelegramActor(token: String,
   private var analysisFlag                       = false
 
   def receive: Receive = {
-    case "Сбор аналитики"            => if (analysisFlag) {
-      investInfoBot.sendMessage("Сбор аналитики уже запущен")
-    } else {
-      analysisFlag = true
-      sharedKillSwitch = KillSwitches.shared("my-kill-switch")
+    case "Сбор аналитики" =>
+      if (analysisFlag) {
+        investInfoBot.sendMessage("Сбор аналитики уже запущен")
+      } else {
+        analysisFlag = true
+        sharedKillSwitch = KillSwitches.shared("my-kill-switch")
 
-      investInfoBot.sendMessage("Успешный запуск сбора аналитики")
-    }
-    case "Остановка сбора аналитики" => if (analysisFlag) {
-      sharedKillSwitch.shutdown()
-      analysisFlag = false
-      investInfoBot.sendMessage("Сбор аналитики остановлен")
-    } else {
-      investInfoBot.sendMessage("Сбор аналитики не запущен")
-    }
+        investInfoBot.sendMessage("Успешный запуск сбора аналитики")
+      }
+    case "Остановка сбора аналитики" =>
+      if (analysisFlag) {
+        sharedKillSwitch.shutdown()
+        analysisFlag = false
+        investInfoBot.sendMessage("Сбор аналитики остановлен")
+      } else {
+        investInfoBot.sendMessage("Сбор аналитики не запущен")
+      }
 
     case "Сбор аналитики" =>
       if (analysisFlag) {
@@ -60,7 +62,8 @@ class TelegramActor(token: String,
       } else {
         analysisFlag = true
         sharedKillSwitch = KillSwitches.shared("my-kill-switch")
-        AnalyticTask.startAnalyticsJob(api)(sharedKillSwitch)(i => Task{investInfoBot.sendMessage(i)})(schedulerTinkoff,materializer)
+        AnalyticTask.startAnalyticsJob(api)(sharedKillSwitch)(i => Task { investInfoBot.sendMessage(i) })(schedulerTinkoff,
+                                                                                                          materializer)
 
         investInfoBot.sendMessage("Успешный запуск сбора аналитики")
       }
@@ -75,7 +78,7 @@ class TelegramActor(token: String,
 
     case error => log.error("ERROR_Receive=" + error.toString)
   }
-  private val getInvestInfoBot: Option[DefaultBotOptions] => InvestInfoBot = defaultBotOptions =>
+  private def getInvestInfoBot(defaultBotOptions: Option[DefaultBotOptions]): InvestInfoBot =
     (for {
       z <- defaultBotOptions
     } yield new InvestInfoBot(token, name, z, chat_id, context.self))
