@@ -55,7 +55,7 @@ class TelegramActor(token: String,
         AnalyticTask.startAnalyticsJob(api)(sharedKillSwitch)(i => Task {
           investBot.sendMessage(i)
         })(schedulerTinkoff,
-          materializer)
+          materializer).runAsyncAndForget(schedulerTinkoff)
         investBot.sendMessage("Успешный запуск сбора аналитики")
       }
       }
