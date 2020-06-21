@@ -22,6 +22,7 @@ object TelegramActor {
             schedulerTinkoff: SchedulerService,
             materializer: Materializer): Props =
     Props(new TelegramActor(token, name, chat_id, defaultBotOptions, api, schedulerTinkoff, materializer))
+  ApiContextInitializer.init()
 }
 
 class TelegramActor(token: String,
@@ -33,12 +34,12 @@ class TelegramActor(token: String,
                     materializer: Materializer)
     extends Actor {
  import TelegramActor._
-  
+
   private val log: LoggingAdapter = Logging(context.system, this)
 
   private val telegramBotsApi:TelegramBotsApi = new TelegramBotsApi()
-  private val investInfoBot: InvestInfoBot = getInvestInfoBot(defaultBotOptions)
-  telegramBotsApi.registerBot(investInfoBot)
+  private val investBot: InvestInfoBot = new InvestInfoBot(token, name, chat_id, context.self)
+  telegramBotsApi.registerBot(investBot)
 
   private var sharedKillSwitch: SharedKillSwitch = KillSwitches.shared("my-kill-switch")
   private var analysisFlag                       = false
@@ -47,15 +48,15 @@ class TelegramActor(token: String,
     case "Сбор аналитики" =>{
       log.info("Сбор аналитики")
       if (analysisFlag) {
-        investInfoBot.sendMessage("Сбор аналитики уже запущен")
+        investBot.sendMessage("Сбор аналитики уже запущен")
       } else {
         analysisFlag = true
         sharedKillSwitch = KillSwitches.shared("my-kill-switch")
         AnalyticTask.startAnalyticsJob(api)(sharedKillSwitch)(i => Task {
-          investInfoBot.sendMessage(i)
+          investBot.sendMessage(i)
         })(schedulerTinkoff,
           materializer)
-        investInfoBot.sendMessage("Успешный запуск сбора аналитики")
+        investBot.sendMessage("Успешный запуск сбора аналитики")
       }
       }
     case "Остановка сбора аналитики" => {
@@ -63,9 +64,9 @@ class TelegramActor(token: String,
       if (analysisFlag) {
         sharedKillSwitch.shutdown()
         analysisFlag = false
-        investInfoBot.sendMessage("Сбор аналитики остановлен")
+        investBot.sendMessage("Сбор аналитики остановлен")
       } else {
-        investInfoBot.sendMessage("Сбор аналитики не запущен")
+        investBot.sendMessage("Сбор аналитики не запущен")
       }
     }
     case error => log.error("ERROR_Receive=" + error.toString)
@@ -78,7 +79,7 @@ class TelegramActor(token: String,
 
 
   override def preStart(): Unit = {
-    ApiContextInitializer.init()
+
   }
 
   override val supervisorStrategy =
