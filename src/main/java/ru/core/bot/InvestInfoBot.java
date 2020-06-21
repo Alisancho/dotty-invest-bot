@@ -16,6 +16,7 @@ import ru.invest.core.ConfigObject;
 import java.util.Objects;
 
 public class InvestInfoBot extends TelegramLongPollingBot {
+    
     private final String token;
     private final String name;
     private final Long chat_id;
@@ -63,7 +64,6 @@ public class InvestInfoBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        System.out.println(update.getMessage().getText());
         if (update.getMessage() != null && update.getMessage().hasText() && Objects.equals(update.getMessage().getChatId(), this.chat_id)) {
             try {
                 acctorRef.tell(update.getMessage().getText(), acctorRef);

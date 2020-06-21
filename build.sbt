@@ -38,5 +38,6 @@ lazy val root = project
     libraryDependencies += ("mysql"             % "mysql-connector-java" % "8.0.18").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("io.projectreactor" % "reactor-core"         % "3.3.5.RELEASE").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("org.telegram"  % "telegrambots" % "4.7"),
-    libraryDependencies += ("org.jetbrains" % "annotations"  % "19.0.0")
+    libraryDependencies += ("org.jetbrains" % "annotations"  % "19.0.0"), libraryDependencies += "org.projectlombok" % "lombok" % "1.18.12" % "provided"
+
   )

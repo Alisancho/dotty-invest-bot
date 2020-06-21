@@ -32,5 +32,6 @@ object InstrumentCandles {
        |FIGI = ${instrument.figi}
        |NAME = ${instrument.name}
        |TICKER = ${instrument.ticker}
+       |URL = https://static.tinkoff.ru/brands/traiding/${instrument.isin}x160.png
        |""".stripMargin
 }

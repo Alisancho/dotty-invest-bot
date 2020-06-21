@@ -17,18 +17,16 @@ object TelegramActor {
   def apply(token: String,
             name: String,
             chat_id: Long,
-            defaultBotOptions: Option[DefaultBotOptions],
             api: OpenApi,
             schedulerTinkoff: SchedulerService,
             materializer: Materializer): Props =
-    Props(new TelegramActor(token, name, chat_id, defaultBotOptions, api, schedulerTinkoff, materializer))
+    Props(new TelegramActor(token, name, chat_id, api, schedulerTinkoff, materializer))
   ApiContextInitializer.init()
 }
 
 class TelegramActor(token: String,
                     name: String,
                     chat_id: Long,
-                    defaultBotOptions: Option[DefaultBotOptions],
                     api: OpenApi,
                     schedulerTinkoff: SchedulerService,
                     materializer: Materializer)
@@ -76,16 +74,12 @@ class TelegramActor(token: String,
       z <- defaultBotOptions
     } yield new InvestInfoBot(token, name, z, chat_id, context.self))
       .getOrElse(new InvestInfoBot(token, name, chat_id, context.self))
-
-
-  override def preStart(): Unit = {
-
-  }
+  
 
   override val supervisorStrategy =
     OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.second){
-      case _: Exception => {
-        log.error("ERROR!!!!!!!!!!!!!")
+      case e: Exception => {
+        log.error("ERROR_IN_TELEGRAM_ACTOR=" + e.getMessage)
         Stop
       }
     }

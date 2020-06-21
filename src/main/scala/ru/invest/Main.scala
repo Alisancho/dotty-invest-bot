@@ -28,31 +28,11 @@ object Main extends TaskApp {
       _  <- Task.unit
       ap <- apiTask
       ta = system.actorOf(
-        TelegramActor(TELEGRAM_TOKEN, TELEGRAM_NAMEBOT, TELEGRAM_CHAT_ID, getProxy(TELEGRAM_PROXY), ap, schedulerTinkoff,materializer))
+        TelegramActor(TELEGRAM_TOKEN, TELEGRAM_NAMEBOT, TELEGRAM_CHAT_ID, ap, schedulerTinkoff,materializer))
     } yield ExitCode.Success
 
   private val apiTask: Task[OpenApi] = for {
     log <- Task { Logger.getLogger("Pooo") }
     api <- Task { new OkHttpOpenApiFactory(TOKEN, log).createOpenApiClient(schedulerTinkoff) }
   } yield api
-
-  private def getProxy(pr: Boolean): Option[DefaultBotOptions] = {
-    if (pr) {
-      val bootOption: DefaultBotOptions = ApiContext.getInstance(classOf[DefaultBotOptions])
-      bootOption.setProxyType(DefaultBotOptions.ProxyType.SOCKS5)
-      bootOption.setProxyHost(TELEGRAM_HOST)
-      bootOption.setProxyPort(TELEGRAM_PORT)
-      bootOption
-      Option.apply(bootOption)
-    } else {
-      Option.empty
-    }
-  }
-
-  private def proxyLogic[T](q: Boolean, w: T): Option[T] =
-    if (q) {
-      Option.apply(w)
-    } else {
-      Option.empty
-    }
 }
