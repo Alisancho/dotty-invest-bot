@@ -25,10 +25,8 @@ public class InvestInfoBot extends TelegramLongPollingBot {
 
     public InvestInfoBot(@NotNull String token,
                          @NotNull String name,
-                         @NotNull DefaultBotOptions defaultBotOptions,
                          @NotNull Long chat_id,
                          @NotNull ActorRef acctorRef) {
-        super(defaultBotOptions);
         this.token = token;
         this.name = name;
         this.chat_id = chat_id;
@@ -43,23 +41,13 @@ public class InvestInfoBot extends TelegramLongPollingBot {
         final var keyboardFirstRow2 = new KeyboardRow();
         final var keyboardFirstRow3 = new KeyboardRow();
 
-        keyboardFirstRow3.add(new KeyboardButton(ConfigObject.UPDATE_TOOLS()));
-        keyboardFirstRow2.add(new KeyboardButton(ConfigObject.ANALYTICS_STOP()));
-        keyboardFirstRow1.add(new KeyboardButton(ConfigObject.ANALYTICS_START()));
-
+        keyboardFirstRow3.add(new KeyboardButton(ConfigObject.ANALYTICS_UP()));
+        keyboardFirstRow2.add(new KeyboardButton(ConfigObject.ANALYTICS_DOWN()));
+        keyboardFirstRow1.add(new KeyboardButton(ConfigObject.ANALYTICS_STOP_UP()));
+        keyboardFirstRow1.add(new KeyboardButton(ConfigObject.ANALYTICS_STOP_DOWN()));
         replyKeyboardMarkup.setKeyboard(List.of(keyboardFirstRow1, keyboardFirstRow2, keyboardFirstRow3));
 
         sendMessage("START_SERVER");
-    }
-
-    public InvestInfoBot(@NotNull String token,
-                         @NotNull String name,
-                         @NotNull Long chat_id,
-                         @NotNull ActorRef acctorRef) {
-        this.token = token;
-        this.name = name;
-        this.chat_id = chat_id;
-        this.acctorRef = acctorRef;
     }
 
     @Override

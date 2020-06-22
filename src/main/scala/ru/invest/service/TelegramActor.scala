@@ -11,6 +11,7 @@ import monix.eval.Task
 import akka.actor.OneForOneStrategy
 import akka.actor.SupervisorStrategy._
 import scala.concurrent.duration._
+import ru.invest.core.ConfigObject._
 import org.telegram.telegrambots.meta.{ApiContext, TelegramBotsApi}
 
 object TelegramActor {
@@ -35,33 +36,57 @@ class TelegramActor(token: String,
 
   private val log: LoggingAdapter = Logging(context.system, this)
 
-  private val telegramBotsApi:TelegramBotsApi = new TelegramBotsApi()
+  private lazy val telegramBotsApi:TelegramBotsApi = new TelegramBotsApi()
+  
   private lazy val investBot: InvestInfoBot = new InvestInfoBot(token, name, chat_id, context.self)
   telegramBotsApi.registerBot(investBot)
 
-  private var sharedKillSwitch: SharedKillSwitch = KillSwitches.shared("my-kill-switch")
-  private var analysisFlag                       = false
+  private var sharedKillSwitch_up: SharedKillSwitch = KillSwitches.shared("my-kill-switch-up")
+  private var analysisFlag_up                       = false
+
+  private var sharedKillSwitch_down: SharedKillSwitch = KillSwitches.shared("my-kill-switch-down")
+  private var analysisFlag_down                       = false
 
   def receive: Receive = {
-    case "Сбор аналитики" =>{
-      log.info("Сбор аналитики")
-      if (analysisFlag) {
+    case ANALYTICS_UP =>{
+      if (analysisFlag_up) {
         investBot.sendMessage("Сбор аналитики уже запущен")
       } else {
-        analysisFlag = true
-        sharedKillSwitch = KillSwitches.shared("my-kill-switch")
-        AnalyticTask.startAnalyticsJob(api)(sharedKillSwitch)(i => Task {
+        analysisFlag_up = true
+        sharedKillSwitch_up = KillSwitches.shared("my-kill-switch")
+        AnalyticTask.startAnalyticsJobUp(api)(sharedKillSwitch_up)(i => Task {
           investBot.sendMessage(i)
         })(schedulerTinkoff,
           materializer).runAsyncAndForget(schedulerTinkoff)
         investBot.sendMessage("Успешный запуск сбора аналитики")
       }
       }
-    case "Остановка сбора аналитики" => {
-      log.info("Остановка сбора аналитики")
-      if (analysisFlag) {
-        sharedKillSwitch.shutdown()
-        analysisFlag = false
+    case ANALYTICS_DOWN =>{
+      if (analysisFlag_down) {
+        investBot.sendMessage("Сбор аналитики уже запущен")
+      } else {
+        analysisFlag_down = true
+        sharedKillSwitch_down = KillSwitches.shared("my-kill-switch")
+        AnalyticTask.startAnalyticsJobDown(api)(sharedKillSwitch_down)(i => Task {
+          investBot.sendMessage(i)
+        })(schedulerTinkoff,
+          materializer).runAsyncAndForget(schedulerTinkoff)
+        investBot.sendMessage("Успешный запуск сбора аналитики")
+      }
+    }
+    case ANALYTICS_STOP_UP => {
+      if (analysisFlag_up) {
+        sharedKillSwitch_up.shutdown()
+        analysisFlag_up = false
+        investBot.sendMessage("Сбор аналитики остановлен")
+      } else {
+        investBot.sendMessage("Сбор аналитики не запущен")
+      }
+    }
+    case ANALYTICS_STOP_DOWN => {
+      if (analysisFlag_down) {
+        sharedKillSwitch_down.shutdown()
+        analysisFlag_down = false
         investBot.sendMessage("Сбор аналитики остановлен")
       } else {
         investBot.sendMessage("Сбор аналитики не запущен")
@@ -69,12 +94,6 @@ class TelegramActor(token: String,
     }
     case error => log.error("ERROR_Receive=" + error.toString)
   }
-  private def getInvestInfoBot(defaultBotOptions: Option[DefaultBotOptions]): InvestInfoBot =
-    (for {
-      z <- defaultBotOptions
-    } yield new InvestInfoBot(token, name, z, chat_id, context.self))
-      .getOrElse(new InvestInfoBot(token, name, chat_id, context.self))
-  
 
   override val supervisorStrategy =
     OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.second){

@@ -18,9 +18,10 @@ object ConfigObject {
   val TELEGRAM_TOKEN: String = conf.getString("telegtam.token")
   val TELEGRAM_NAMEBOT: String = conf.getString("telegtam.namebot")
   val TELEGRAM_CHAT_ID: Long = conf.getInt("telegtam.chat.id")
-
-  val ANALYTICS_START: String = "Сбор аналитики"
-  val ANALYTICS_STOP: String = "Остановка сбора аналитики"
-  val UPDATE_TOOLS: String = "Обновить"
+  
+  val ANALYTICS_UP:String = "Получить список возможного роста"
+  val ANALYTICS_DOWN:String = "Получить список возможного падения"
+  val ANALYTICS_STOP_UP: String = "Остановка сбора аналитики роста"
+  val ANALYTICS_STOP_DOWN: String = "Остановка сбора аналитики падения"
 
 }
