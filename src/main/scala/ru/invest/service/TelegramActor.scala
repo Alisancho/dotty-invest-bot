@@ -36,7 +36,7 @@ class TelegramActor(token: String,
   private val log: LoggingAdapter = Logging(context.system, this)
 
   private val telegramBotsApi:TelegramBotsApi = new TelegramBotsApi()
-  private val investBot: InvestInfoBot = new InvestInfoBot(token, name, chat_id, context.self)
+  private lazy val investBot: InvestInfoBot = new InvestInfoBot(token, name, chat_id, context.self)
   telegramBotsApi.registerBot(investBot)
 
   private var sharedKillSwitch: SharedKillSwitch = KillSwitches.shared("my-kill-switch")
