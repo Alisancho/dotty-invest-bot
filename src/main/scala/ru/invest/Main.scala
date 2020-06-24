@@ -17,6 +17,7 @@ import ru.invest.core.ConfigObject._
 
 import scala.concurrent.ExecutionContextExecutor
 import ru.invest.service.TelegramActor
+
 object Main extends TaskApp {
   implicit val system: ActorSystem                = ActorSystem()
   implicit val ec: ExecutionContextExecutor       = system.dispatcher

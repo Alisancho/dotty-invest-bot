@@ -38,7 +38,7 @@ class TelegramActor(token: String,
 
   private lazy val telegramBotsApi:TelegramBotsApi = new TelegramBotsApi()
   
-  private lazy val investBot: InvestInfoBot = new InvestInfoBot(token, name, chat_id, context.self)
+  private val investBot: InvestInfoBot = new InvestInfoBot(token, name, chat_id, context.self)
   telegramBotsApi.registerBot(investBot)
 
   private var sharedKillSwitch_up: SharedKillSwitch = KillSwitches.shared("my-kill-switch-up")
