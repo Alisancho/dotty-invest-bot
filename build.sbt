@@ -24,8 +24,7 @@ lazy val root = project
     libraryDependencies += ("org.typelevel"            %% "cats-core"               % "2.0.0").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("co.fs2"                   %% "fs2-core"                % "2.0.1").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("co.fs2"                   %% "fs2-io"                  % "2.0.1").withDottyCompat(scalaVersion.value),
-    libraryDependencies += ("com.softwaremill.macwire" %% "macrosakka"              % "2.3.3" % "provided")
-      .withDottyCompat(scalaVersion.value),
+    libraryDependencies += ("com.softwaremill.macwire" %% "macrosakka"              % "2.3.3" % "provided").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("com.softwaremill.macwire" %% "macros" % "2.3.3" % "provided").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("com.softwaremill.macwire" %% "proxy"  % "2.3.3").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("com.softwaremill.macwire" %% "util"   % "2.3.3").withDottyCompat(scalaVersion.value),
@@ -38,6 +37,7 @@ lazy val root = project
     libraryDependencies += ("mysql"             % "mysql-connector-java" % "8.0.18").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("io.projectreactor" % "reactor-core"         % "3.3.5.RELEASE").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("org.telegram"  % "telegrambots" % "4.7"),
-    libraryDependencies += ("org.jetbrains" % "annotations"  % "19.0.0"), libraryDependencies += "org.projectlombok" % "lombok" % "1.18.12" % "provided"
+    libraryDependencies += ("org.jetbrains" % "annotations"  % "19.0.0"), 
+      libraryDependencies += ("org.projectlombok" % "lombok" % "1.18.12" % "provided")
 
   )
