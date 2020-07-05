@@ -21,23 +21,19 @@ import scala.language.postfixOps
 import scala.concurrent.duration._
 import scala.concurrent.java8.FuturesConvertersImpl.{CF, P}
 
-object AnalyticTask extends LazyLogging{
+object AnalyticTask extends LazyLogging {
   import ru.invest.core.analytics.CompletionStageCandles._
   import ru.invest.core.analytics.InstrumentCandles._
-  def startAnalyticsJobUp(openApi: OpenApi)
-                       (sharedKillSwitch: SharedKillSwitch)
-                       (f: String => Task[_])
-                       (sheduler:SchedulerService,materializer:Materializer): Task[Unit] =
+  def startAnalyticsJobUp(openApi: OpenApi)(sharedKillSwitch: SharedKillSwitch)(
+      f: String => Task[_])(sheduler: SchedulerService, materializer: Materializer): Task[Unit] =
     for {
       c    <- Task.fromFuture(openApi.getMarketContext.getMarketStocks.toScalaFuture)
       list = c.instruments.asScala.toList
       _    = analyticsStreamUp(list, sharedKillSwitch)(openApi)(f)(sheduler).run()(materializer)
     } yield ()
 
-  def startAnalyticsJobDown(openApi: OpenApi)
-                         (sharedKillSwitch: SharedKillSwitch)
-                         (f: String => Task[_])
-                         (sheduler:SchedulerService,materializer:Materializer): Task[Unit] =
+  def startAnalyticsJobDown(openApi: OpenApi)(sharedKillSwitch: SharedKillSwitch)(
+      f: String => Task[_])(sheduler: SchedulerService, materializer: Materializer): Task[Unit] =
     for {
       c    <- Task.fromFuture(openApi.getMarketContext.getMarketStocks.toScalaFuture)
       list = c.instruments.asScala.toList
@@ -50,7 +46,8 @@ object AnalyticTask extends LazyLogging{
       .throttle(1, 800.millis)
       .via(sharedKillSwitch.flow)
       .map(instrument => {
-        instrument.toTaskAnslytics(openApi)
+        instrument
+          .toTaskAnslytics(openApi)
           .runAsync {
             case Left(value) => println(value.getMessage)
             case Right(value) => {
@@ -68,12 +65,13 @@ object AnalyticTask extends LazyLogging{
       .to(Sink.ignore)
 
   def analyticsStreamDown(list: List[Instrument], sharedKillSwitch: SharedKillSwitch)(openApi: OpenApi)(f: String => Task[_])(
-    sheduler: SchedulerService): RunnableGraph[NotUsed] =
+      sheduler: SchedulerService): RunnableGraph[NotUsed] =
     Source(list)
       .throttle(1, 800.millis)
       .via(sharedKillSwitch.flow)
       .map(instrument => {
-        instrument.toTaskAnslytics(openApi)
+        instrument
+          .toTaskAnslytics(openApi)
           .runAsync {
             case Left(value) => println(value.getMessage)
             case Right(value) => {
