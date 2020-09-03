@@ -6,7 +6,7 @@ lazy val root = project
   .settings(
     name := "dotty-simple",
     version := "0.1.0",
-    scalaVersion := "0.25.0-RC2",
+    scalaVersion := "0.27.0-RC1",
     libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test",
     libraryDependencies += ("com.typesafe.akka"        %% "akka-actor"              % "2.6.4").withDottyCompat(scalaVersion.value),
     libraryDependencies += ("com.typesafe.akka"        %% "akka-testkit"            % "2.6.4" % Test).withDottyCompat(scalaVersion.value),
